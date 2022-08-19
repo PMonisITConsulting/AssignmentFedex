@@ -15,7 +15,7 @@ public class TrackClient {
 
     private final WebClient client;
 
-    public Mono<Object> getTrack(String trackIds) {
+    public Mono<Object> getTracking(String trackIds) {
         return client
                 .get()
                 .uri("track?q=" + trackIds)

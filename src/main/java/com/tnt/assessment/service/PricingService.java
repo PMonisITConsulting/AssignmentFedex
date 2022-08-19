@@ -17,28 +17,25 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class PricingService {
 
-    @Value("${apiSettings.callCap}")
-    private Integer callCap;
-    @Value("${apiSettings.commaDelimitedValues}")
-    private Integer commaDelimitedValues;
-
     @Autowired
     private PricingClient client;
 
     private FluxSink<Pair<List<String>, CompletableFuture<HashMap<String, Double>>>> innerSink;
 
-    public PricingService() {
+    public PricingService(@Value("${apiSettings.callCap}") Integer callCap,
+                          @Value("${apiSettings.timeCap}") Integer timeCap,
+                          @Value("${apiSettings.commaDelimitedCap}") Integer commaDelimitedCap) {
         Flux<Pair<List<String>, CompletableFuture<HashMap<String, Double>>>> queue =
                 Flux.create(sink -> innerSink = sink);
 
-        queue.bufferTimeout(callCap, Duration.ofSeconds(20)).map(requestParams -> {
+        queue.bufferTimeout(callCap, Duration.ofSeconds(timeCap)).map(requestParams -> {
             List<String> requestParamList = new ArrayList<>();
 
             requestParams.forEach(param -> requestParamList.addAll(param.getFirst()));
 
             HashMap<String, Double> responses = new HashMap<>();
 
-            Flux.fromIterable(Lists.partition(requestParamList, commaDelimitedValues))
+            Flux.fromIterable(Lists.partition(requestParamList, commaDelimitedCap))
                     .flatMap(parameters -> client.getPricing(String.join(",", parameters)))
                     .collectMap(response -> {
                         responses.putAll((HashMap) response);
