@@ -1,0 +1,5 @@
+server:
+  port: 8081
+
+backEndServices:
+  baseUri: http://localhost:8080/
