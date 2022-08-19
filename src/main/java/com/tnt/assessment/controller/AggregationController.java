@@ -5,6 +5,9 @@ import com.tnt.assessment.client.ShipmentsClient;
 import com.tnt.assessment.client.TrackClient;
 import com.tnt.assessment.dto.AggregationDto;
 import com.tnt.assessment.service.AggregationService;
+import com.tnt.assessment.service.PricingService;
+import com.tnt.assessment.service.ShipmentsService;
+import com.tnt.assessment.service.TrackService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -13,6 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuple3;
+
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -21,40 +30,32 @@ import java.util.List;
 public class AggregationController {
 
     @Autowired
-    ShipmentsClient shipmentsClient;
+    ShipmentsService shipmentsService;
     @Autowired
-    TrackClient trackClient;
+    PricingService pricingService;
     @Autowired
-    PricingClient pricingClient;
-
-    @Autowired
-    AggregationService service;
+    TrackService trackService;
 
     @GetMapping
-    public Flux<AggregationDto> getAggregation(@RequestParam List<String> pricing,
+    public AggregationDto getAggregation(@RequestParam List<String> pricing,
                                          @RequestParam List<String> track,
                                          @RequestParam List<String> shipments) {
         AggregationDto aggregation = new AggregationDto();
 
-//        Flux.fromArray(shipments.toArray()).bufferTimeout(5, Duration.ofSeconds(10))
-//                .map(list -> System.out.println(list) );
+        Mono<Tuple3<HashMap<String, String[]>, HashMap<String, Double>, HashMap<String, String>>> results = Mono.zip(
+                shipmentsService.request(shipments),
+                pricingService.request(pricing),
+                trackService.request(track)
+        );
 
-        return null;
+        results.map(tuple -> {
+            aggregation.setShipments((HashMap<String, String[]>) tuple.get(0));
+            aggregation.setPricing((HashMap<String, Double>) tuple.get(1));
+            aggregation.setTrack((HashMap<String, String>) tuple.get(2));
 
-//        Flux.merge(Arrays.asList(shipmentsClient.getShipments(), pricingClient.getPricing(), trackClient.getTrack()))
-//                .bufferTimeout(5, Duration.ofSeconds(10))
-//                .doOnNext(responses -> {
-//                    aggregation.setShipments((HashMap<String, String[]>) responses.get(0));
-//                    aggregation.setPricing((HashMap<String, Float>) responses.get(1));
-//                    aggregation.setTrack((HashMap<String, String>) responses.get(2));
-//                })
-//                .then()
-//                .block();
+            return "ok";
+        }).block();
+
+        return aggregation;
     }
-
-//    private void subscriberTest() {
-//        t.bufferTimeout(5, Duration.ofSeconds(20)).doOnNext(responses -> {
-//            aggregation.setShipments((HashMap<String, String[]>) responses.get(0));
-//        });
-//    }
 }

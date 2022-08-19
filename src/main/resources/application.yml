@@ -3,3 +3,7 @@ server:
 
 backEndServices:
   baseUri: http://localhost:8080/
+
+apiSettings:
+  callCap: 5
+  commaDelimitedValues: 5
