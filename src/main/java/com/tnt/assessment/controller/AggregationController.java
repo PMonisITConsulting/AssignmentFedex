@@ -22,11 +22,11 @@ import java.util.List;
 public class AggregationController {
 
     @Autowired
-    ShipmentService shipmentService;
+    private final ShipmentService shipmentService;
     @Autowired
-    PricingService pricingService;
+    private final PricingService pricingService;
     @Autowired
-    TrackService trackService;
+    private final TrackService trackService;
 
     @GetMapping
     public AggregationDto getAggregation(@RequestParam List<String> pricing,

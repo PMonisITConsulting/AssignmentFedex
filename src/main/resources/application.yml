@@ -2,7 +2,7 @@ server:
   port: 8081
 
 backEndServices:
-  baseUri: http://localhost:8080/
+  baseUri: http://api:8080/
 
 apiSettings:
   callCap: 1
