@@ -16,14 +16,23 @@ requirements of this application.
 After having the external api running (port 8080):
 
 ### Docker
-If Docker is available, runnign the following commands will suffice:
+
+If using docker, it's necessary to create an internal network in order
+to access the external api:
+```
+docker network create int-network
+```
+After this, we just need to run the image of the backend-services:
+```
+docker run --network "int-network" --name "backend-services" --publish 8000:8000 xyzassessment/backend-services:latest
+```
 
 As requested I didn't publish this assessment in any repository, so we'll have to build the image first.
 ```
 docker build --tag assessment .
 ```
 ```
-docker run --publish 8000:8000 assessment
+docker run --network "int-network" --name "aggregation-api" --publish 8081:8081 assessment
 ```
 That's it! We are ready to start making some requests!
 
