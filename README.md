@@ -34,7 +34,7 @@ docker build --tag assessment .
 ```
 docker run --network "int-network" --name "aggregation-api" --publish 8081:8081 assessment
 ```
-That's it! We are ready to start making some requests!
+That's it! We are ready to start making some requests at http://localhost:8081/aggregation!
 
 ### Command Line
 In order to run the app from the command line it's necessary
