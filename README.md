@@ -40,6 +40,14 @@ That's it! We are ready to start making some requests at http://localhost:8081/a
 In order to run the app from the command line it's necessary
 to have java 17 as default in Java_Home.
 
+At the moment the application.yml has the internal network url for the external application,
+so it can be used with docker. If you want to run the application directly from your 
+IDE or int the command line, please change the following property in application.yml:
+```
+backEndServices:
+  baseUri: http://localhost:8080/
+```
+
 If so, all that is necessary is:
 ```
 mvn spring-boot:run
