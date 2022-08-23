@@ -5,6 +5,6 @@ backEndServices:
   baseUri: http://backend-services:8080/
 
 apiSettings:
-  callCap: 1
+  callCap: 5
   timeCap: 5
   commaDelimitedCap: 5
